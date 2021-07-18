@@ -1,3 +1,4 @@
+import logging
 from itertools import islice
 from typing import Any, Dict, List, Optional, Tuple
 
@@ -14,6 +15,8 @@ __all__ = (
     "Node",
     "build_node_tree",
 )
+
+log = logging.getLogger(__name__)
 
 AdapterDict = Dict[str, Adapter]
 
@@ -164,7 +167,9 @@ class Interpreter:
         return Context(node.verb, response, self, original_message)
 
     def _get_acceptors(self, ctx: Context) -> List[Block]:
-        return [b for b in self.blocks if b.will_accept(ctx)]
+        acceptors = [b for b in self.blocks if b.will_accept(ctx)]
+        log.debug("%r acceptors: %r", ctx, acceptors)
+        return acceptors
 
     def _process_blocks(self, ctx: Context, node: Node) -> Optional[str]:
         acceptors = self._get_acceptors(ctx)
@@ -225,7 +230,6 @@ class Interpreter:
     ):
         final = message
         total_work = 0
-
         for index, node in enumerate(node_ordered_list):
             start, end = node.coordinates
             ctx = self._get_context(
@@ -236,9 +240,11 @@ class Interpreter:
                 verb_limit=verb_limit,
                 dot_parameter=dot_parameter,
             )
+            log.debug("Processing context %r at (%r, %r)", ctx, start, end)
             try:
                 output = self._process_blocks(ctx, node)
             except StopError as exc:
+                log.debug("StopError raised on node %r", node, exc_info=exc)
                 return final[:start] + exc.message
             if output is None:
                 continue  # If there was no value output, no need to text deform.
