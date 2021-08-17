@@ -58,7 +58,7 @@ class CooldownBlock(verb_required_block(True, payload=True, parameter=True)):
             rate, per = helper_split(verb.parameter, maxsplit=1)
             per = int(per)
             rate = float(rate)
-        except ValueError:
+        except (ValueError, TypeError):
             return
 
         if split := helper_split(verb.payload, False, maxsplit=1):
