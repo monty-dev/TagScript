@@ -100,6 +100,8 @@ class MemberAdapter(AttributeAdapter):
         The author's top role's color as a hex code.
     top_role
         The author's top role.
+    roleids
+        A list of the author's role IDs, split by spaces.
     """
 
     def update_attributes(self):
@@ -114,6 +116,8 @@ class MemberAdapter(AttributeAdapter):
             "bot": self.object.bot,
             "top_role": getattr(self.object, "top_role", None),
         }
+        if roleids := getattr(self.object, "_roles", None):
+            additional_attributes["roleids"] = " ".join(str(r) for r in roleids)
         self._attributes.update(additional_attributes)
 
 
