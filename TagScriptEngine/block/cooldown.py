@@ -44,12 +44,12 @@ class CooldownBlock(verb_required_block(True, payload=True, parameter=True)):
     """
 
     ACCEPTED_NAMES = ("cooldown",)
-    __COOLDOWNS: Dict[Any, CooldownMapping] = {}
+    COOLDOWNS: Dict[Any, CooldownMapping] = {}
 
     @classmethod
     def create_cooldown(cls, key: Any, rate: int, per: int) -> CooldownMapping:
         cooldown = CooldownMapping.from_cooldown(rate, per, lambda x: x)
-        cls.__COOLDOWNS[key] = cooldown
+        cls.COOLDOWNS[key] = cooldown
         return cooldown
 
     def process(self, ctx: Context) -> Optional[str]:
@@ -71,7 +71,7 @@ class CooldownBlock(verb_required_block(True, payload=True, parameter=True)):
         if cooldown_key is None:
             cooldown_key = ctx.original_message
         try:
-            cooldown = self.__COOLDOWNS[cooldown_key]
+            cooldown = self.COOLDOWNS[cooldown_key]
             base = cooldown._cooldown
             if (rate, per) != (base.rate, base.per):
                 cooldown = self.create_cooldown(cooldown_key, rate, per)
