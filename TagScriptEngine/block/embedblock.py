@@ -7,6 +7,7 @@ from discord import Colour, Embed
 from ..exceptions import BadColourArgument, EmbedParseError
 from ..interface import Block
 from ..interpreter import Context
+from .helpers import helper_split, implicit_bool
 
 
 def string_to_color(argument: str) -> Colour:
@@ -35,6 +36,23 @@ def set_color(embed: Embed, attribute: str, value: str):
 def set_dynamic_url(embed: Embed, attribute: str, value: str):
     method = getattr(embed, f"set_{attribute}")
     method(url=value)
+
+
+def add_field(embed: Embed, _: str, payload: str):
+    try:
+        name, value, _inline = helper_split(payload, 3)
+        inline = implicit_bool(_inline)
+        if inline is None:
+            raise EmbedParseError(
+                f"`inline` argument for `add_field` is not a boolean value (_inline)"
+            )
+    except ValueError:
+        try:
+            name, value = helper_split(payload, 2)
+        except ValueError as exc:
+            raise EmbedParseError("`add_field` payload was not split by |") from exc
+        inline = False
+    embed.add_field(name=name, value=value, inline=inline)
 
 
 class EmbedBlock(Block):
@@ -75,6 +93,12 @@ class EmbedBlock(Block):
     *   ``url``
     *   ``thumbnail``
     *   ``image``
+    *   ``field`` - (See below)
+
+    Adding a field to an embed requires the payload to be split by ``|``, into
+    either 2 or 3 parts. The first part is the name of the field, the second is
+    the text of the field, and the third optionally specifies whether the field
+    should be inline.
 
     **Usage:** ``{embed(<attribute>):<value>}``
 
@@ -85,8 +109,9 @@ class EmbedBlock(Block):
     **Examples:** ::
 
         {embed(color):#37b2cb}
-        {embed(title):Support Guide}
-        {embed(description):i like pizza}
+        {embed(title):Rules}
+        {embed(description):Follow these rules to ensure a good experience in our server!}
+        {embed(field):Rule 1|Respect everyone you speak to.|false}
 
     Both methods can be combined to create an embed in a tag.
     The following tagscript uses JSON to create an embed with fields and later
@@ -108,6 +133,7 @@ class EmbedBlock(Block):
         "url": setattr,
         "thumbnail": set_dynamic_url,
         "image": set_dynamic_url,
+        "field": add_field,
     }
 
     @staticmethod
