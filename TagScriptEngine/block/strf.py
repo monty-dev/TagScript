@@ -1,11 +1,11 @@
 from datetime import datetime, timezone
 from typing import Optional
 
-from ..interface import verb_required_block
+from ..interface import Block
 from ..interpreter import Context
 
 
-class StrfBlock(verb_required_block(True, payload=True)):
+class StrfBlock(Block):
     """
     The strf block converts and formats timestamps based on `strftime formatting spec <https://strftime.org/>`_.
     Two types of timestamps are supported: ISO and epoch.
@@ -44,6 +44,8 @@ class StrfBlock(verb_required_block(True, payload=True)):
     def process(self, ctx: Context) -> Optional[str]:
         if ctx.verb.declaration.lower() == "unix":
             return str(int(datetime.now(timezone.utc).timestamp()))
+        if not ctx.verb.payload:
+            return None
         if ctx.verb.parameter:
             if ctx.verb.parameter.isdigit():
                 try:
@@ -59,5 +61,5 @@ class StrfBlock(verb_required_block(True, payload=True)):
         else:
             t = datetime.now()
         if not t.tzinfo:
-            t = t.replace(tzinfo=timezone)
+            t = t.replace(tzinfo=timezone.utc)
         return t.strftime(ctx.verb.payload)
