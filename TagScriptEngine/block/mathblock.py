@@ -116,6 +116,7 @@ class NumericStringParser(object):
             "log": lambda a: math.log(a, 10),
             "ln": math.log,
             "log2": math.log2,
+            "sqrt": math.sqrt,
         }
 
     def evaluateStack(self, s):
