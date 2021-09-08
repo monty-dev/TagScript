@@ -1,4 +1,9 @@
-from typing import Optional
+from __future__ import annotations
+
+from typing import Optional, TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from ..interpreter import Context
 
 
 class Adapter:
@@ -8,13 +13,10 @@ class Adapter:
     Implementations must subclass this to create adapters.
     """
 
-    def __init__(self):
-        pass
-
     def __repr__(self):
         return f"<{type(self).__qualname__} at {hex(id(self))}>"
 
-    def get_value(self, ctx: "interpreter.Context") -> Optional[str]:
+    def get_value(self, ctx: Context) -> Optional[str]:
         """
         Processes the adapter's actions for a given :class:`~TagScriptEngine.interpreter.Context`.
 

@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import logging
 from itertools import islice
 from typing import Any, Dict, List, Optional, Tuple
@@ -123,10 +125,10 @@ class Context:
 
     __slots__ = ("verb", "original_message", "interpreter", "response")
 
-    def __init__(self, verb: Verb, res: Response, interpreter, og: str):
+    def __init__(self, verb: Verb, res: Response, interpreter: Interpreter, og: str):
         self.verb: Verb = verb
         self.original_message: str = og
-        self.interpreter = interpreter
+        self.interpreter: Interpreter = interpreter
         self.response: Response = res
 
     def __repr__(self):

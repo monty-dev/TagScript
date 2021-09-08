@@ -1,5 +1,11 @@
+from __future__ import annotations
+
 from functools import lru_cache
-from typing import Optional
+from typing import Optional, TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from ..interpreter import Context
+
 
 __all__ = ("Block", "verb_required_block")
 
@@ -18,14 +24,11 @@ class Block:
 
     ACCEPTED_NAMES = ()
 
-    def __init__(self):
-        pass
-
     def __repr__(self):
         return f"<{type(self).__qualname__} at {hex(id(self))}>"
 
     @classmethod
-    def will_accept(cls, ctx: "interpreter.Context") -> bool:
+    def will_accept(cls, ctx: Context) -> bool:
         """
         Describes whether the block is valid for the given :class:`~TagScriptEngine.interpreter.Context`.
 
@@ -42,10 +45,10 @@ class Block:
         dec = ctx.verb.declaration.lower()
         return dec in cls.ACCEPTED_NAMES
 
-    def pre_process(self, ctx: "interpreter.Context"):
+    def pre_process(self, ctx: Context):
         return None
 
-    def process(self, ctx: "interpreter.Context") -> Optional[str]:
+    def process(self, ctx: Context) -> Optional[str]:
         """
         Processes the block's actions for a given :class:`~TagScriptEngine.interpreter.Context`.
 
@@ -99,7 +102,7 @@ def verb_required_block(
             return f"VerbRequiredBlock(implicit={implicit!r}, payload={payload!r}, parameter={parameter!r})"
 
     class VerbRequiredBlock(Block, metaclass=RequireMeta):
-        def will_accept(self, ctx: "interpreter.Context") -> bool:
+        def will_accept(self, ctx: Context) -> bool:
             verb = ctx.verb
             if payload and not check(verb.payload):
                 return False

@@ -1,4 +1,12 @@
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 from discord.ext.commands import Cooldown
+
+if TYPE_CHECKING:
+    from .interpreter import Interpreter, Response
+
 
 __all__ = (
     "TagScriptError",
@@ -33,10 +41,10 @@ class ProcessError(TagScriptError):
         The interpreter used for processing.
     """
 
-    def __init__(self, error: Exception, response, interpreter):
-        self.original = error
-        self.response = response
-        self.interpreter = interpreter
+    def __init__(self, error: Exception, response: Response, interpreter: Interpreter):
+        self.original: Exception = error
+        self.response: Response = response
+        self.interpreter: Interpreter = interpreter
         super().__init__(error)
 
 
