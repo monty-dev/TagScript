@@ -2,7 +2,11 @@ import re
 from inspect import isawaitable
 from typing import Any, Awaitable, Callable, Union
 
-__all__ = ("escape_content", "maybe_await")
+import discord
+
+__all__ = ("escape_content", "maybe_await", "DPY2")
+
+DPY2 = discord.version_info >= discord.VersionInfo(major=2, minor=0, micro=0, releaselevel='alpha', serial=0)
 
 pattern = re.compile(r"(?<!\\)([{():|}])")
 

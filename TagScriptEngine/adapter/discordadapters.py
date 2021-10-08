@@ -1,9 +1,9 @@
 from random import choice
 
-from discord import TextChannel
+import discord
 
 from ..interface import Adapter
-from ..utils import escape_content
+from ..utils import escape_content, DPY2
 from ..verb import Verb
 
 __all__ = (
@@ -60,7 +60,7 @@ class AttributeAdapter(Adapter):
         return escape_content(return_value) if should_escape else return_value
 
 
-class MemberAdapter(AttributeAdapter):
+class MemberAdapter(AttributeAdapter[discord.Member]):
     """
     The ``{author}`` block with no parameters returns the tag invoker's full username
     and discriminator, but passing the attributes listed below to the block payload
@@ -105,11 +105,12 @@ class MemberAdapter(AttributeAdapter):
     """
 
     def update_attributes(self):
+        avatar_url = self.object.display_avatar.url if DPY2 else self.object.avatar_url
         additional_attributes = {
             "color": self.object.color,
             "colour": self.object.color,
             "nick": self.object.display_name,
-            "avatar": (self.object.avatar_url, False),
+            "avatar": (avatar_url, False),
             "discriminator": self.object.discriminator,
             "joined_at": getattr(self.object, "joined_at", self.object.created_at),
             "mention": self.object.mention,
@@ -152,7 +153,7 @@ class ChannelAdapter(AttributeAdapter):
     """
 
     def update_attributes(self):
-        if isinstance(self.object, TextChannel):
+        if isinstance(self.object, discord.TextChannel):
             additional_attributes = {
                 "nsfw": self.object.nsfw,
                 "mention": self.object.mention,
@@ -209,8 +210,9 @@ class GuildAdapter(AttributeAdapter):
             else:
                 humans += 1
         member_count = guild.member_count
+        icon_url = guild.icon.url if DPY2 else guild.icon_url
         additional_attributes = {
-            "icon": (guild.icon_url, False),
+            "icon": (icon_url, False),
             "member_count": member_count,
             "members": member_count,
             "bots": bots,
