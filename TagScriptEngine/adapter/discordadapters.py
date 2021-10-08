@@ -60,7 +60,7 @@ class AttributeAdapter(Adapter):
         return escape_content(return_value) if should_escape else return_value
 
 
-class MemberAdapter(AttributeAdapter[discord.Member]):
+class MemberAdapter(AttributeAdapter):
     """
     The ``{author}`` block with no parameters returns the tag invoker's full username
     and discriminator, but passing the attributes listed below to the block payload
