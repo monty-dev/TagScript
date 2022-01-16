@@ -19,10 +19,11 @@ class AttributeAdapter(Adapter):
 
     def __init__(self, base):
         self.object = base
+        created_at = getattr(base, "created_at", None) or discord.utils.snowflake_time(base.id)
         self._attributes = {
             "id": base.id,
-            "created_at": base.created_at,
-            "timestamp": int(base.created_at.timestamp()),
+            "created_at": created_at,
+            "timestamp": int(created_at.timestamp()),
             "name": getattr(base, "name", str(base)),
         }
         self._methods = {}
@@ -210,7 +211,7 @@ class GuildAdapter(AttributeAdapter):
             else:
                 humans += 1
         member_count = guild.member_count
-        icon_url = guild.icon.url if DPY2 else guild.icon_url
+        icon_url = getattr(guild.icon, "url") if DPY2 else guild.icon_url
         additional_attributes = {
             "icon": (icon_url, False),
             "member_count": member_count,
