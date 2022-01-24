@@ -116,7 +116,7 @@ class MemberAdapter(AttributeAdapter):
             "joined_at": getattr(self.object, "joined_at", self.object.created_at),
             "mention": self.object.mention,
             "bot": self.object.bot,
-            "top_role": getattr(self.object, "top_role", None),
+            "top_role": getattr(self.object, "top_role", ""),
         }
         if roleids := getattr(self.object, "_roles", None):
             additional_attributes["roleids"] = " ".join(str(r) for r in roleids)
@@ -158,7 +158,7 @@ class ChannelAdapter(AttributeAdapter):
             additional_attributes = {
                 "nsfw": self.object.nsfw,
                 "mention": self.object.mention,
-                "topic": self.object.topic or None,
+                "topic": self.object.topic or "",
             }
             self._attributes.update(additional_attributes)
 
@@ -211,7 +211,7 @@ class GuildAdapter(AttributeAdapter):
             else:
                 humans += 1
         member_count = guild.member_count
-        icon_url = getattr(guild.icon, "url") if DPY2 else guild.icon_url
+        icon_url = getattr(guild.icon, "url", "") if DPY2 else guild.icon_url
         additional_attributes = {
             "icon": (icon_url, False),
             "member_count": member_count,
