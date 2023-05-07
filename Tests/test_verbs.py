@@ -32,13 +32,13 @@ class TestVerbFunctionality(unittest.TestCase):
         result = unique_outcomes == seen_outcomes
 
         if not result:
-            print("Error from '" + string + "'")
+            print(f"Error from '{string}'")
             print("Seen:")
             for item in seen_outcomes:
-                print("> " + str(item))
+                print(f"> {str(item)}")
             print("Expected: ")
             for item in unique_outcomes:
-                print(">> " + str(item))
+                print(f">> {str(item)}")
 
         return result
 
