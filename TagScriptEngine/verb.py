@@ -66,7 +66,7 @@ class Verb:
         if self.parameter is not None:
             response += f".{self.parameter}" if self.dot_parameter else f"({self.parameter})"
         if self.payload is not None:
-            response += ":" + self.payload
+            response += f":{self.payload}"
         return response + "}"
 
     def __repr__(self):
